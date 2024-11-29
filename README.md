@@ -1,3 +1,12 @@
+```javascript
+/**
+ * Vue 3 Playbook
+ * by Jim Cooper
+*/
+
+// Note: I don't follow instruction well...
+```
+
 # pinia-robot-shop
 
 This template should help get you started developing with Vue 3 in Vite.
