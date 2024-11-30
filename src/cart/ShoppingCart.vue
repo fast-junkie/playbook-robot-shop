@@ -1,48 +1,39 @@
-<!--<template>-->
-<!--  <div class="container">-->
-<!--    <h1>Your Cart</h1>-->
-<!--    <EmptyCart v-if="cart.length === 0" />-->
-<!--    <ul class="cart" v-if="cart.length > 0">-->
-<!--      <li class="cart-item" v-for="(product, index) in cart" :key="index">-->
-<!--        <ProductInfo :product="product">-->
-<!--          <BaseButton @click="removeFromCart(product)">Remove</BaseButton>-->
-<!--        </ProductInfo>-->
-<!--      </li>-->
-<!--    </ul>-->
-<!--    <div v-if="cart.length > 0" class="total">Total: {{ toCurrency(cartTotal) }}</div>-->
-<!--  </div>-->
-<!--</template>-->
+<template>
+  <div class="container">
+    <h1>Your Cart</h1>
+    <EmptyCart v-if="cart.length === 0" />
+    <ul class="cart" v-if="cart.length > 0">
+      <li class="cart-item" v-for="(product, index) in cart" :key="index">
+        <ProductInfo :product="product">
+          <BaseButton @click="removeFromCart(product)">Remove</BaseButton>
+        </ProductInfo>
+      </li>
+    </ul>
+    <div v-if="cart.length > 0" class="total">Total: {{ toCurrency(cartTotal) }}</div>
+  </div>
+</template>
 
-<script>
-import { h, resolveComponent } from 'vue'
+<script setup>
+import { defineAsyncComponent } from 'vue'
 import { storeToRefs } from 'pinia'
-import EmptyCart from './EmptyCart.vue'
-import ProductInfo from '@/catalog/product-info/ProductInfo.vue'
 import { useCartStore } from '@/stores/cart'
 import { toCurrency } from '@/shared/formatters'
 
-export default {
-  render() {
-    const cartStore = useCartStore()
-    const { cart, cartTotal } = storeToRefs(cartStore)
-    const { removeFromCart } = cartStore
-    const BaseButton = resolveComponent('BaseButton')
-    const emptyCart = h(EmptyCart)
-    const cartItems = h('ul', { class: 'cart' },
-        cart.value.map((product, index) => h('li', { class: 'cart-item', key: index }, [
-          h(ProductInfo, { product }, () => h(BaseButton, { onClick: () => removeFromCart(product) }, () => 'Remove')),
-        ])),
-    )
-
-    return h('div', { class: 'container' }, [
-        h('h1', ['Your Cart']),
-        cart.value.length > 0 ? cartItems : emptyCart,
-        cart.value.length > 0 ? h('div', { class: 'total' }, [`Total: ${toCurrency(cartTotal.value)}`]) : null,
-    ])
-  },
-}
-
-
+const ErrorFallback = defineAsyncComponent(() => import('@/shared/ErrorFallback.vue'))
+const LoadingMessage = defineAsyncComponent(() => import('@/shared/LoadingMessage.vue'))
+const EmptyCart = defineAsyncComponent(() => import('./EmptyCart.vue'))
+const ProductInfo = defineAsyncComponent({
+  loader: () => new Promise((resolve) => {
+    setTimeout(() => import('@/catalog/product-info/ProductInfo.vue').then((module) => resolve(module)), 2e3)
+  }),
+  loadingComponent: LoadingMessage,
+  delay: 2e2,
+  timeout: 5e3,
+  errorComponent: ErrorFallback,
+})
+const cartStore = useCartStore()
+const { cart, cartTotal } = storeToRefs(cartStore)
+const { removeFromCart } = cartStore
 
 </script>
 

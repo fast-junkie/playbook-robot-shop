@@ -15,11 +15,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, shallowRef } from 'vue'
 import allProducts from './robots'
 const title = ref('Robot List')
 
-const products = ref(allProducts)
+const products = shallowRef(allProducts)
 
 function mutablyUpdateFirstRobotName() {
   products.value[0].name = 'Updated name'
