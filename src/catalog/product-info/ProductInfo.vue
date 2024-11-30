@@ -3,7 +3,10 @@
     <div class="product-details">
       <img :src="product.imageUrl" :alt="product.name" />
       <div class="product-info">
-        <div class="name">{{ product.name }}</div>
+        <div class="name">
+          {{ product.name }}
+          <span v-if="inventory">({{ inventory }} in stock)</span>
+        </div>
         <div class="description">{{ product.description }}</div>
         <div class="category" @click="partCategoryClicked(product.category)">Part Category: {{ product.category }}</div>
       </div>
@@ -21,17 +24,29 @@
 </template>
 
 <script setup>
-import { onUpdated } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { toCurrency } from '@/shared/formatters'
+import { useProductStore } from '@/stores/product'
 
-onUpdated(() => {
-  console.debug('ProductInfo updated')
-})
+const { getInventory } = useProductStore()
+const inventory = ref(null)
 
-defineProps({
+const props = defineProps({
   product: { required: true },
   selected: { type: Boolean, required: false },
 })
+
+watchEffect(
+  async () => {
+    if (props.selected) inventory.value = await getInventory(props.product.id)
+  },
+)
+
+// watch(
+//     () => props.selected,
+//     async (n, o) => { if (n || o === undefined) inventory.value = await getInventory(props.product.id) },
+//     { immediate: true, deep: false, flush: 'pre' },
+// )
 
 const emit = defineEmits(['partCategorySelected'])
 
