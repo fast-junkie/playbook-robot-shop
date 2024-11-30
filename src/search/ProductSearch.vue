@@ -28,7 +28,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import ProductInfo from '@/catalog/product-info/ProductInfo.vue'
 import { useCartStore } from '@/stores/cart'

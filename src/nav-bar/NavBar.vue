@@ -10,7 +10,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from 'vue'
 import SignIn from './SignIn.vue'
 import MyAccount from './MyAccount.vue'

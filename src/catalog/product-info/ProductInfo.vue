@@ -23,18 +23,21 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watchEffect } from 'vue'
 import { toCurrency } from '@/shared/formatters'
 import { useProductStore } from '@/stores/product'
+import type { Product } from '@/catalog/product-info/product.interface.ts';
 
 const { getInventory } = useProductStore()
 const inventory = ref(null)
 
-const props = defineProps({
-  product: { required: true },
-  selected: { type: Boolean, required: false },
-})
+type Props = {
+  product: Product
+  selected?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), { selected: false })
 
 watchEffect(
   async () => {
@@ -42,18 +45,22 @@ watchEffect(
   },
 )
 
+const emit = defineEmits<{ partCategorySelected: [category: string] }>()
+
+const partCategoryClicked = (category: string) => {
+  emit('partCategorySelected', category)
+}
+
+// const props = defineProps({
+//   product: { required: true },
+//   selected: { type: Boolean, required: false, default: false },
+// })
+
 // watch(
 //     () => props.selected,
 //     async (n, o) => { if (n || o === undefined) inventory.value = await getInventory(props.product.id) },
 //     { immediate: true, deep: false, flush: 'pre' },
 // )
-
-const emit = defineEmits(['partCategorySelected'])
-
-const partCategoryClicked = (category) => {
-  emit('partCategorySelected', category)
-}
-
 </script>
 
 <style scoped>

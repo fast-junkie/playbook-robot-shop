@@ -14,7 +14,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, shallowRef } from 'vue'
 import allProducts from './robots'
 const title = ref('Robot List')
